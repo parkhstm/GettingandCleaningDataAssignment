@@ -1,6 +1,4 @@
-setwd("c:\\R\\")##This is my work directory.
-
-##I put raw dataset folder(UCI HAR Dataset) under my working directory
+##Downlaoded unzipped raw dataset folder(UCI HAR Dataset) is under working directory
 
 ##====================================##
 ##Make DataFrame for each Train/Tast set
@@ -49,7 +47,8 @@ one_data <- rbind(data_test, data_train) ##one_data : merged data set
 ##=======================================================##
 ####According to features_info.txt file, the variable that estimate mean and standard deviation from each  measurement
 ####has a name contain 'mean()' of 'std()'. 
-####And there is no variable has same word{'mean()' or 'std()'} as a variable name other than variables for mean and standard deviation.
+####And there is no variable has same word{'mean()' or 'std()'} as a variable name other than variables for mean and 
+####standard deviation.
 ####Therefore, I extract variables which contain the word 'mean(' and 'std(' by using grep function.
 
 ###1.Find column numbers which have 'mean' or 'std'
@@ -67,12 +66,29 @@ colnames(new_data)[1:2] <- c("subject.number", "activity")
 ##===========================================================================================##
 ##creates second data set with the average of each variable for each activity and each subject.
 ##===========================================================================================##
-####split data frame by split function, and then calculate average by lapply and mean function
+####create emptu dataframe, and then fill this empty dataframe with average of each measurement.
+####select of each activity and each subject (which is 6 by 30) loop function is used.
+####calcaulation for acerage is done by apply function.
 
-###1. Split new_data
-splitbysub <- split(new_data, new_data$subject.number) ##Split new_data by each subject
-splitbyact <- split(new_data, new_data$activity) ###Split new_data by each activity
+###1.Create empty dataframe
+second_data <- data.frame(matrix(rep(0, 6*30*ncol(new_data)),ncol=ncol(new_data)))
 
-###2. calculate average of each variable and make two new data frame
-meanbysub <- t(sapply(splitbysub, simplify="data.frame", function(x){apply(x[,3:ncol(x)],2,mean)}))
-meanbyact <- t(sapply(splitbyact, simplify="data.frame", function(x){apply(x[,3:ncol(x)],2,mean)}))
+###2.calculate average for each activity and each subject, then fill above empty data frame
+temp_vector <- rep(0,68) ## temporary vector for recieve calculated average
+
+for (i in 1:6){ ##i=number of activity
+	for(j in 1:30){ ##j=number of subject
+		temp_vector[1] <- activity_labels[i,2] ##activity
+		temp_vector[2] <- j ##subject number
+		temp_data <- new_data[which(new_data[,1]==j & new_data[,2]==activity_labels[i,2]),] ##temporary data
+		temp_vector[3:68] <- apply(temp_data[3:68], 2, mean) ##calculate average
+		second_data[((i-1)*30)+j,] <- temp_vector ##fill empty data frame
+	}
+}
+
+###4.Make new label for average of each measurement
+new_label <- paste("average", colnames(new_data)[3:68], "-")
+
+###5.attach column name
+colnames(second_data) <- c("activity","subject",new_label)
+
