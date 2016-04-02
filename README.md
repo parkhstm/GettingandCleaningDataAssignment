@@ -119,14 +119,16 @@ The numeric vlaue from column 3 is  the proccessed measurement data. Among the d
   }
    ```  
 ######3. Make new label for average of each measurement.
-   * Relabel each column name by adding 'average-'.  
+* Relabel each column name by adding 'average-'.  
    ```R
    new_label <- paste("average", colnames(new_data)[3:68], "-")
    ```  
+
 ######4. Attach column name.
    ```R
    colnames(second_data) <- c("activity","subject",new_label)
    ```  
+
 ######5. Write txt file
    ```R
    write.table(second_data, "assignment.txt", sep="\t", row.name=FALSE )
