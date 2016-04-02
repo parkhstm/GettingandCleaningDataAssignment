@@ -118,7 +118,7 @@ The numeric vlaue from column 3 is  the proccessed measurement data. Among the d
    }
   }
    ```  
-#######3. Make new label for average of each measurement.
+######3. Make new label for average of each measurement.
    * Relabel each column name by adding 'average-'.  
    ```R
    new_label <- paste("average", colnames(new_data)[3:68], "-")
